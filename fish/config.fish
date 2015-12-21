@@ -1,22 +1,16 @@
 . ~/.config/fish/aliases.fish
 
-# vi mode, start in insert mode
-set fish_bind_mode insert
+# set default PATH
+set -gx PATH /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/games /usr/local/games /home/rikjur/.rbenv/shims
 
-set -g theme_display_git yes
-set -g theme_display_git_untracked no
-set -g theme_display_git_ahead_verbose yes
-set -g theme_display_hg yes
-set -g theme_display_virtualenv no
-set -g theme_display_ruby no
-set -g theme_display_user no
-set -g theme_display_vi yes
-set -g theme_display_vi_hide_mode default
-set -g theme_title_display_process yes
-set -g theme_title_display_path no
-set -g theme_title_use_abbreviated_path no
-set -g theme_date_format "+%a %H:%M"
-set -g theme_avoid_ambiguous_glyphs yes
-set -g default_user rikj
+if test $TERM != "screen-256color"
+	set -gx TERM xterm-256color
+end
 
-set -g theme_display_vi yes
+if test (which rbenv 2>/dev/null)
+  status --is-interactive; and . (rbenv init -|psub)
+end
+
+fish_vi_mode
+
+set -g fish_bind_mode insert

@@ -1,94 +1,271 @@
-# name: bobthefish
+
+# agnoster's Theme - https://gist.github.com/3712874
+# A Powerline-inspired theme for FISH
 #
-# bobthefish is a Powerline-style, Git-aware fish theme optimized for awesome.
+# # README
 #
-# You will need a Powerline-patched font for this to work:
-#
-#     https://powerline.readthedocs.org/en/latest/fontpatching.html
-#
-# I recommend picking one of these:
-#
-#     https://github.com/Lokaltog/powerline-fonts
-#
-# You can override some default prompt options in your config.fish:
-#
-#     set -g theme_display_git no
-#     set -g theme_display_git_untracked no
-#     set -g theme_display_git_ahead_verbose yes
-#     set -g theme_display_hg yes
-#     set -g theme_display_virtualenv no
-#     set -g theme_display_ruby no
-#     set -g theme_display_user yes
-#     set -g theme_display_vi yes
-#     set -g theme_display_vi_hide_mode default
-#     set -g theme_avoid_ambiguous_glyphs yes
-#     set -g default_user your_normal_user
+# In order for this theme to render correctly, you will need a
+# [Powerline-patched font](https://gist.github.com/1595572).
+
+## Set this options in your config.fish (if you want to :])
+# set -g theme_display_user yes
+set -g default_user gnzh
 
 
-# Powerline glyphs
-set __bobthefish_branch_glyph            \uE0A0
-set __bobthefish_ln_glyph                \uE0A1
-set __bobthefish_padlock_glyph           \uE0A2
-set __bobthefish_right_black_arrow_glyph \uE0B0
-set __bobthefish_right_arrow_glyph       \uE0B1
-set __bobthefish_left_black_arrow_glyph  \uE0B2
-set __bobthefish_left_arrow_glyph        \uE0B3
 
-# Additional glyphs
-set __bobthefish_detached_glyph          \u27A6
-set __bobthefish_nonzero_exit_glyph      '! '
-set __bobthefish_superuser_glyph         '$ '
-set __bobthefish_bg_job_glyph            '% '
-set __bobthefish_hg_glyph                \u263F
-
-# Python glyphs
-set __bobthefish_superscript_glyph       \u00B9 \u00B2 \u00B3
-set __bobthefish_virtualenv_glyph        \u25F0
-set __bobthefish_pypy_glyph              \u1D56
-
-set -g gruvbox_bg                       282828
-set -g gruvbox_fg                       ebdbb2
-
-# Colors
-set gruvbox_dark_green                  98971a
-set gruvbox_light_green                 b8bb26
-
-set gruvbox_dark_red                    cc241d
-set gruvbox_light_red                   fb4934
-
-set gruvbox_dark_yellow                 d79921
-set gruvbox_light_yellow                fabd2f
-
-set gruvbox_dark_blue                   458588
-set gruvbox_light_blue                  83a598
-
-set gruvbox_dark_purple                 b16286
-set gruvbox_light_purple                d3869b
-
-set gruvbox_dark_aqua                   689d6a
-set gruvbox_light_aqua                  8ac07c
-
-set gruvbox_dark_orange                 d65d0e
-set gruvbox_light_orange                fe8019
-
-set gruvbox_dark_grey                   a89984
-set gruvbox_light_grey                  928374
-
-set gruvbox_bg1_h                       1d2021
-set gruvbox_bg1                         3c3836
-set gruvbox_bg2                         504945
-set gruvbox_bg3                         665c54
-set gruvbox_bg4                         7c6f64
-
-set gruvbox_fg4                         a89984
-set gruvbox_fg3                         dbae93
-set gruvbox_fg2                         d5c4a1
-set gruvbox_fg1                         ebdbb2
-set gruvbox_fg0                         fbf1c7
-
+set -g current_bg NONE
+set segment_separator \uE0B0
+set right_segment_separator \uE0B0
 # ===========================
 # Helper methods
 # ===========================
+
+set -g __fish_git_prompt_showdirtystate 'yes'
+set -g __fish_git_prompt_char_dirtystate '±'
+set -g __fish_git_prompt_char_cleanstate ''
+
+set -g theme_display_user "no"
+
+function parse_git_dirty
+  set -l submodule_syntax
+  set submodule_syntax "--ignore-submodules=dirty"
+  set git_dirty (git status -s $submodule_syntax  2> /dev/null)
+  if [ -n "$git_dirty" ]
+    if [ $__fish_git_prompt_showdirtystate = "yes" ]
+      echo -n "$__fish_git_prompt_char_dirtystate"
+    end
+  else
+    if [ $__fish_git_prompt_showdirtystate = "yes" ]
+      echo -n "$__fish_git_prompt_char_cleanstate"
+    end
+  end
+end
+
+
+# ===========================
+# Segments functions
+# ===========================
+
+function prompt_segment -d "Function to draw a segment"
+  set -l bg
+  set -l fg
+  if [ -n "$argv[1]" ]
+    set bg $argv[1]
+  else
+    set bg normal
+  end
+  if [ -n "$argv[2]" ]
+    set fg $argv[2]
+  else
+    set fg normal
+  end
+  if [ "$current_bg" != 'NONE' -a "$argv[1]" != "$current_bg" ]
+    set_color -b $bg
+    set_color $current_bg
+    echo -n "$segment_separator "
+    set_color -b $bg
+    set_color $fg
+  else
+    set_color -b $bg
+    set_color $fg
+    echo -n " "
+  end
+  set current_bg $argv[1]
+  if [ -n "$argv[3]" ]
+    echo -n -s $argv[3] " "
+  end
+end
+
+function prompt_finish -d "Close open segments"
+  if [ -n $current_bg ]
+    set_color -b normal
+    set_color $current_bg
+    echo -n "$segment_separator "
+  end
+  set -g current_bg NONE
+end
+
+
+# ===========================
+# Theme components
+# ===========================
+
+function prompt_user -d "Display actual user if different from $default_user"
+  if [ "$USER" != "$default_user" -o "$theme_display_user" = "yes" -o -n "$SSH_CLIENT" -o -n "$SSH_CONNECTION" ]
+    prompt_segment black white (whoami)
+    prompt_segment white black λ
+    prompt_segment black white (hostname)
+  end
+end
+
+function prompt_dir -d "Display the actual directory"
+  prompt_segment blue black (prompt_pwd)
+end
+
+function prompt_git -d "Display the actual git state"
+  set -l ref
+  set -l dirty
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1
+    set dirty (parse_git_dirty)
+    set ref (git symbolic-ref HEAD 2> /dev/null)
+    set ref (git symbolic-ref HEAD 2> /dev/null)
+    if [ $status -gt 0 ]
+      set -l branch (git show-ref --head -s --abbrev |head -n1 2> /dev/null)
+      set ref "➦ $branch "
+    end
+    set -l branch (echo $ref | sed  's-refs/heads/- -')
+    if [ "$dirty" != "" ]
+      prompt_segment yellow black "$branch $dirty"
+    else
+      prompt_segment green black "$branch $dirty"
+    end
+  end
+end
+
+function prompt_status -d "the symbols for a non zero exit status, root and background jobs"
+    if [ $RETVAL -ne 0 ]
+      prompt_segment black red "✘"
+    end
+
+    # if superuser (uid == 0)
+    set -l uid (id -u $USER)
+    if [ $uid -eq 0 ]
+      prompt_segment black yellow "⚡"
+    end
+
+    # Jobs display
+    if [ (jobs -l | wc -l) -gt 0 ]
+      prompt_segment black cyan "⚙"
+    end
+end
+
+
+function prompt_vi_mode -d 'Displays the current vi mode'
+  switch $fish_bind_mode
+    case default
+      prompt_segment red black "N"
+    case insert
+      prompt_segment green black "I"
+    case visual
+      prompt_segment purple black "V"
+  end
+end
+
+function get_ruby_version
+  if test (which rbenv 2>/dev/null)
+    rbenv version-name
+  else
+    echo ""
+  end
+end
+
+# ===========================
+# Apply theme
+# ===========================
+
+function fish_prompt
+  # set -g RETVAL $status
+  # prompt_status
+  # prompt_user
+  prompt_dir
+  prompt_git
+  prompt_segment black white (get_ruby_version)
+  prompt_vi_mode
+  prompt_finish
+end
+
+
+# # name: bobthefish
+# #
+# # bobthefish is a Powerline-style, Git-aware fish theme optimized for awesome.
+# #
+# # You will need a Powerline-patched font for this to work:
+# #
+# #     https://powerline.readthedocs.org/en/latest/fontpatching.html
+# #
+# # I recommend picking one of these:
+# #
+# #     https://github.com/Lokaltog/powerline-fonts
+# #
+# # You can override some default prompt options in your config.fish:
+# #
+# #     set -g theme_display_git no
+# #     set -g theme_display_git_untracked no
+# #     set -g theme_display_git_ahead_verbose yes
+# #     set -g theme_display_hg yes
+# #     set -g theme_display_virtualenv no
+# #     set -g theme_display_ruby no
+# #     set -g theme_display_user yes
+# #     set -g theme_display_vi yes
+# #     set -g theme_display_vi_hide_mode default
+# #     set -g theme_avoid_ambiguous_glyphs yes
+# #     set -g default_user your_normal_user
+
+
+# # Powerline glyphs
+# set __bobthefish_branch_glyph            \uE0A0
+# set __bobthefish_ln_glyph                \uE0A1
+# set __bobthefish_padlock_glyph           \uE0A2
+# set __bobthefish_right_black_arrow_glyph \uE0B0
+# set __bobthefish_right_arrow_glyph       \uE0B1
+# set __bobthefish_left_black_arrow_glyph  \uE0B2
+# set __bobthefish_left_arrow_glyph        \uE0B3
+
+# # Additional glyphs
+# set __bobthefish_detached_glyph          \u27A6
+# set __bobthefish_nonzero_exit_glyph      '! '
+# set __bobthefish_superuser_glyph         '$ '
+# set __bobthefish_bg_job_glyph            '% '
+# set __bobthefish_hg_glyph                \u263F
+
+# # Python glyphs
+# set __bobthefish_superscript_glyph       \u00B9 \u00B2 \u00B3
+# set __bobthefish_virtualenv_glyph        \u25F0
+# set __bobthefish_pypy_glyph              \u1D56
+
+# set -g gruvbox_bg                       282828
+# set -g gruvbox_fg                       ebdbb2
+
+# # Colors
+# set gruvbox_dark_green                  98971a
+# set gruvbox_light_green                 b8bb26
+
+# set gruvbox_dark_red                    cc241d
+# set gruvbox_light_red                   fb4934
+
+# set gruvbox_dark_yellow                 d79921
+# set gruvbox_light_yellow                fabd2f
+
+# set gruvbox_dark_blue                   458588
+# set gruvbox_light_blue                  83a598
+
+# set gruvbox_dark_purple                 b16286
+# set gruvbox_light_purple                d3869b
+
+# set gruvbox_dark_aqua                   689d6a
+# set gruvbox_light_aqua                  8ac07c
+
+# set gruvbox_dark_orange                 d65d0e
+# set gruvbox_light_orange                fe8019
+
+# set gruvbox_dark_grey                   a89984
+# set gruvbox_light_grey                  928374
+
+# set gruvbox_bg1_h                       1d2021
+# set gruvbox_bg1                         3c3836
+# set gruvbox_bg2                         504945
+# set gruvbox_bg3                         665c54
+# set gruvbox_bg4                         7c6f64
+
+# set gruvbox_fg4                         a89984
+# set gruvbox_fg3                         dbae93
+# set gruvbox_fg2                         d5c4a1
+# set gruvbox_fg1                         ebdbb2
+# set gruvbox_fg0                         fbf1c7
+
+# # ===========================
+# # Helper methods
+# # ===========================
 
 # function __bobthefish_in_git -d 'Check whether pwd is inside a git repo'
 #   command which git > /dev/null 2>&1; and command git rev-parse --is-inside-work-tree >/dev/null 2>&1
@@ -169,9 +346,9 @@ set gruvbox_fg0                         fbf1c7
 #   end
 # end
 
-# # ===========================
-# # Segment functions
-# # ===========================
+# # # ===========================
+# # # Segment functions
+# # # ===========================
 
 # function __bobthefish_start_segment -d 'Start a prompt segment'
 #   set -l bg $argv[1]
@@ -182,29 +359,29 @@ set gruvbox_fg0                         fbf1c7
 #   set_color normal # clear out anything bold or underline...
 #   set_color -b $bg
 #   set_color $fg $argv
-#   if [ "$__bobthefish_current_bg" = 'NONE' ]
+#   if [ "$gruvbox_bg" = 'NONE' ]
 #     # If there's no background, just start one
 #     echo -n ' '
 #   else
 #     # If there's already a background...
-#     if [ "$bg" = "$__bobthefish_current_bg" ]
+#     if [ "$bg" = "$gruvbox_bg" ]
 #       # and it's the same color, draw a separator
 #       echo -n "$__bobthefish_right_arrow_glyph "
 #     else
 #       # otherwise, draw the end of the previous segment and the start of the next
-#       set_color $__bobthefish_current_bg
+#       set_color $gruvbox_bg
 #       echo -n "$__bobthefish_right_black_arrow_glyph "
 #       set_color $fg $argv
 #     end
 #   end
-#   set __bobthefish_current_bg $bg
+#   set gruvbox_bg $bg
 # end
 
 # function __bobthefish_path_segment -a current_dir -d 'Display a shortened form of a directory'
 #   if [ -w "$current_dir" ]
-#     __bobthefish_start_segment $__bobthefish_dk_grey $__bobthefish_med_grey
+#     __bobthefish_start_segment $gruvbox_dark_grey $gruvbox_light_grey
 #   else
-#     __bobthefish_start_segment $__bobthefish_dk_red $__bobthefish_lt_red
+#     __bobthefish_start_segment $gruvbox_dark_red $gruvbox_light_red
 #   end
 
 #   set -l directory
@@ -222,7 +399,7 @@ set gruvbox_fg0                         fbf1c7
 #   end
 
 #   [ "$parent" ]; and echo -n -s "$parent"
-#   set_color fff --bold
+#   set_color $grvbox_fg --bold
 #   echo -n "$directory "
 #   set_color normal
 # end
@@ -238,9 +415,9 @@ set gruvbox_fg0                         fbf1c7
 # end
 
 
-# # ===========================
-# # Theme components
-# # ===========================
+# # # ===========================
+# # # Theme components
+# # # ===========================
 
 # function __bobthefish_prompt_status -d 'Display symbols for a non zero exit status, root and background jobs'
 #   set -l nonzero
@@ -263,19 +440,19 @@ set gruvbox_fg0                         fbf1c7
 #   end
 
 #   if [ "$nonzero" -o "$superuser" -o "$bg_jobs" ]
-#     __bobthefish_start_segment fff 000
+#     __bobthefish_start_segment $gruvbox_fg 000
 #     if [ "$nonzero" ]
-#       set_color $__bobthefish_dk_red --bold
+#       set_color $gruvbox_dark_red --bold
 #       echo -n $__bobthefish_nonzero_exit_glyph
 #     end
 
 #     if [ "$superuser" ]
-#       set_color $__bobthefish_dk_green --bold
+#       set_color $gruvbox_dark_green --bold
 #       echo -n $__bobthefish_superuser_glyph
 #     end
 
 #     if [ "$bg_jobs" ]
-#       set_color $__bobthefish_slate_blue --bold
+#       set_color $gruvbox_light_blue --bold
 #       echo -n $__bobthefish_bg_job_glyph
 #     end
 
@@ -286,7 +463,7 @@ set gruvbox_fg0                         fbf1c7
 # function __bobthefish_prompt_user -d 'Display actual user if different from $default_user'
 #   if [ "$theme_display_user" = 'yes' ]
 #     if [ "$USER" != "$default_user" -o -n "$SSH_CLIENT" ]
-#       __bobthefish_start_segment $__bobthefish_lt_grey $__bobthefish_slate_blue
+#       __bobthefish_start_segment $gruvbox_light_grey $gruvbox_light_blue
 #       echo -n -s (whoami) '@' (hostname | cut -d . -f 1) ' '
 #     end
 #   end
@@ -298,11 +475,11 @@ set gruvbox_fg0                         fbf1c7
 #   set -l flags "$dirty"
 #   [ "$flags" ]; and set flags ""
 
-#   set -l flag_bg $__bobthefish_lt_green
-#   set -l flag_fg $__bobthefish_dk_green
+#   set -l flag_bg $gruvbox_light_green
+#   set -l flag_fg $gruvbox_dark_green
 #   if [ "$dirty" ]
-#     set flag_bg $__bobthefish_dk_red
-#     set flag_fg fff
+#     set flag_bg $gruvbox_dark_red
+#     set flag_fg $gruvbox_fg
 #   end
 
 #   __bobthefish_path_segment $current_dir
@@ -319,7 +496,7 @@ set gruvbox_fg0                         fbf1c7
 #     if [ -w "$PWD" ]
 #       __bobthefish_start_segment 333 999
 #     else
-#       __bobthefish_start_segment $__bobthefish_dk_red $__bobthefish_lt_red
+#       __bobthefish_start_segment $gruvbox_dark_red $gruvbox_light_red
 #     end
 
 #     echo -n -s $project_pwd ' '
@@ -348,14 +525,14 @@ set gruvbox_fg0                         fbf1c7
 #   set -l flags "$dirty$staged$stashed$ahead$new"
 #   [ "$flags" ]; and set flags " $flags"
 
-#   set -l flag_bg $__bobthefish_lt_green
-#   set -l flag_fg $__bobthefish_dk_green
+#   set -l flag_bg $gruvbox_light_green
+#   set -l flag_fg $gruvbox_dark_green
 #   if [ "$dirty" -o "$staged" ]
-#     set flag_bg $__bobthefish_dk_red
-#     set flag_fg fff
+#     set flag_bg $gruvbox_dark_red
+#     set flag_fg $gruvbox_fg
 #   else if [ "$stashed" ]
-#     set flag_bg $__bobthefish_lt_orange
-#     set flag_fg $__bobthefish_dk_orange
+#     set flag_bg $gruvbox_light_orange
+#     set flag_fg $gruvbox_dark_orange
 #   end
 
 #   __bobthefish_path_segment $current_dir
@@ -369,7 +546,7 @@ set gruvbox_fg0                         fbf1c7
 #     if [ -w "$PWD" ]
 #       __bobthefish_start_segment 333 999
 #     else
-#       __bobthefish_start_segment $__bobthefish_dk_red $__bobthefish_lt_red
+#       __bobthefish_start_segment $gruvbox_dark_red $gruvbox_light_red
 #     end
 
 #     echo -n -s $project_pwd ' '
@@ -384,14 +561,14 @@ set gruvbox_fg0                         fbf1c7
 #   [ "$theme_display_vi" = 'yes' -a "$fish_bind_mode" != "$theme_display_vi_hide_mode" ]; or return
 #   switch $fish_bind_mode
 #     case default
-#       __bobthefish_start_segment $__bobthefish_dk_grey $__bobthefish_dk_grey --bold
+#       __bobthefish_start_segment $gruvbox_dark_grey $gruvbox_dark_grey --bold
 #       echo -n -s 'N '
 #     case insert
-#       __bobthefish_start_segment $__bobthefish_lt_green $__bobthefish_dk_grey --bold
+#       __bobthefish_start_segment $gruvbox_light_green $gruvbox_dark_grey --bold
 #       echo -n -s 'I '
 #     case visual
-#       __bobthefish_start_segment $__bobthefish_lt_orange $__bobthefish_dk_grey --bold
-#       echo -n -s 'V '
+#       __bobthefish_start_segment $gruvbox_light_orange $gruvbox_dark_grey --bold
+#       echo -n -s 'V'
 #   end
 #   set_color normal
 # end
@@ -412,10 +589,10 @@ set gruvbox_fg0                         fbf1c7
 #   [ "$theme_display_virtualenv" = 'no' -o -z "$VIRTUAL_ENV" ]; and return
 #   set -l version_glyph (__bobthefish_virtualenv_python_version)
 #   if [ "$version_glyph" ]
-#     __bobthefish_start_segment $__bobthefish_med_blue $__bobthefish_lt_grey
+#     __bobthefish_start_segment $gruvbox_dark_blue $gruvbox_light_grey
 #     echo -n -s $__bobthefish_virtualenv_glyph $version_glyph
 #   end
-#   __bobthefish_start_segment $__bobthefish_med_blue $__bobthefish_lt_grey --bold
+#   __bobthefish_start_segment $gruvbox_dark_blue $gruvbox_light_grey --bold
 #   echo -n -s (basename "$VIRTUAL_ENV") ' '
 #   set_color normal
 # end
@@ -472,7 +649,7 @@ set gruvbox_fg0                         fbf1c7
 #     [ "$ruby_version" = (cat $rbenv_root/version 2>/dev/null; or echo 'system') ]; and return
 #   end
 #   [ -z "$ruby_version" ]; and return
-#   __bobthefish_start_segment $__bobthefish_ruby_red $__bobthefish_lt_grey --bold
+#   __bobthefish_start_segment $gruvbox_dark_red $gruvbox_light_grey --bold
 #   echo -n -s $ruby_version ' '
 #   set_color normal
 # end
@@ -482,9 +659,9 @@ set gruvbox_fg0                         fbf1c7
 #   __bobthefish_show_ruby
 # end
 
-# # ===========================
-# # Apply theme
-# # ===========================
+# # # ===========================
+# # # Apply theme
+# # # ===========================
 
 # function fish_prompt -d 'bobthefish, a fish theme optimized for awesome'
 #   __bobthefish_prompt_status
