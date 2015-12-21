@@ -7,12 +7,6 @@
 # In order for this theme to render correctly, you will need a
 # [Powerline-patched font](https://gist.github.com/1595572).
 
-## Set this options in your config.fish (if you want to :])
-# set -g theme_display_user yes
-set -g default_user gnzh
-
-
-
 set -g current_bg NONE
 set segment_separator \uE0B0
 set right_segment_separator \uE0B0
@@ -92,9 +86,10 @@ end
 
 function prompt_user -d "Display actual user if different from $default_user"
   if [ "$USER" != "$default_user" -o "$theme_display_user" = "yes" -o -n "$SSH_CLIENT" -o -n "$SSH_CONNECTION" ]
-    prompt_segment black white (whoami)
+    # TODO: only do this when on remote...
+    # prompt_segment black white (whoami)
     prompt_segment white black λ
-    prompt_segment black white (hostname)
+    # prompt_segment black white (hostname)
   end
 end
 
@@ -164,9 +159,9 @@ end
 # ===========================
 
 function fish_prompt
-  # set -g RETVAL $status
+  set -g RETVAL $status
   # prompt_status
-  # prompt_user
+  prompt_user
   prompt_dir
   prompt_git
   prompt_segment black white (get_ruby_version)
