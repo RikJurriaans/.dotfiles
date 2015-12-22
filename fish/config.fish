@@ -11,6 +11,6 @@ if test (which rbenv 2>/dev/null)
   status --is-interactive; and . (rbenv init -|psub)
 end
 
-fish_vi_mode
+set -g fish_key_bindings fish_vi_key_bindings
 
-set -g fish_bind_mode insert
+set fish_bind_mode insert
