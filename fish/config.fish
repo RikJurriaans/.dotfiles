@@ -7,16 +7,14 @@ if test $ELMAR
 end
 
 if test $TERM != "screen-256color"
-	set -gx TERM xterm-256color
+  set -gx TERM xterm-256color
 end
+
+tmux has-session; and tmux attach-session; or tmux new-session; and kill %self
 
 if test (which rbenv 2>/dev/null)
   status --is-interactive; and . (rbenv init -|psub)
 end
-
-tmux_attach
-or tmux_new_session
-or echo "tmux failed to start; using plain fish shell"
 
 set -g fish_key_bindings fish_vi_key_bindings
 
