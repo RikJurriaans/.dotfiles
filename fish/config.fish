@@ -1,11 +1,6 @@
 . ~/.config/fish/env.fish
 . ~/.config/fish/aliases.fish
 
-if test $ELMAR
-  echo "Welcome at Elmar"
-  . ~/.config/fish/elmar_aliases.fish
-end
-
 if test $TERM != "screen-256color"
   set -gx TERM xterm-256color
 end

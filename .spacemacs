@@ -6,7 +6,6 @@
      emacs-lisp
      git
      clojure
-     haskell
      scala
      shell-scripts
      (shell :variables
@@ -63,9 +62,7 @@
    dotspacemacs-highlight-delimiters 'all
    dotspacemacs-persistent-server nil
    dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
-   dotspacemacs-default-package-repository nil
-   )
-  )
+   dotspacemacs-default-package-repository nil))
 
 (defun dotspacemacs/config ()
   "Configuration function.
