@@ -3,3 +3,4 @@ fish/fish_read_history
 fish/generated_completions/
 fish/fishd.*
 fish/elmar_aliases.fish
+.sbt/
