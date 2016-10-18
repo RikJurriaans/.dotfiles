@@ -3,6 +3,7 @@
   (setq-default
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers '(
+                                       javascript
      emacs-lisp
      git
      clojure
@@ -70,4 +71,5 @@
    layers configuration."
   (setq clojure-enable-fancy-symbols t)
   (global-linum-mode)
+  (scala :variables scala-use-java-doc-style t)
   (setq powerline-default-separator 'arrow))
