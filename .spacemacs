@@ -3,6 +3,7 @@
   (setq-default
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers '(
+                                       markdown
                                        javascript
      emacs-lisp
      git
