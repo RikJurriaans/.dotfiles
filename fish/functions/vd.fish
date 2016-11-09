@@ -9,6 +9,8 @@ function vd
 
   tmux new-window -n vd_run -t vd_env
   tmux send-keys -t vd_run "cd ~/Projects/vakantie_discounter" C-m
+  tmux send-keys -t vd_run "docker start vd-redis" C-m
+  tmux send-keys -t vd_run "docker start some-postgres" C-m
   tmux send-keys -t vd_run "make run" C-m
 
   tmux new-window -n vd_terminal -t vd_env

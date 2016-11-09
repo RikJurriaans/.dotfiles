@@ -1,3 +1,6 @@
+# TODO: create some helper functions to simplify code.
+# . tmux_helpers.fish
+
 function ogus753
   tmux new -s ogus_env -d
 
