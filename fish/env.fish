@@ -4,6 +4,6 @@ set -gx ALTERNATE_EDITOR ""
 set -gx EDITOR "emacsclient -t"
 
 # set default PATH
-set -gx PATH /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /usr/bin/activator/bin /sbin /bin /usr/games /usr/local/games /home/rikjur/.rbenv/shims /usr/local/go/bin $ANDROID_HOME\/tools
+set -gx PATH /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /usr/bin/activator/bin /sbin /bin /usr/games /usr/local/games /home/rikjur/.rbenv/shims /usr/local/go/bin $ANDROID_HOME\/tools /opt/robomongo/bin
 
 
