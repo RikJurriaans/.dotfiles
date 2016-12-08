@@ -130,6 +130,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
         | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
+    ++
+    []
 
 
 ------------------------------------------------------------------------
@@ -138,18 +140,15 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- mod-button1, Set the window to floating mode and move by dragging
-    [ ((modm, button1), (\w -> focus w >> mouseMoveWindow w
-                                       >> windows W.shiftMaster))
+    [ ((modm .|. shiftMask, button1), (\w -> focus w >> mouseMoveWindow w
+                                                     >> windows W.shiftMaster))
 
     -- mod-button2, Raise the window to the top of the stack
-    , ((modm, button2), (\w -> focus w >> windows W.shiftMaster))
+    , ((modm .|. shiftMask, button2), (\w -> focus w >> windows W.shiftMaster))
 
     -- mod-button3, Set the window to floating mode and resize by dragging
-    , ((modm, button3), (\w -> focus w >> mouseResizeWindow w
-                                       >> windows W.shiftMaster))
-
-    -- you may also bind events to the mouse scroll wheel (button4 and button5)
-    ]
+    , ((modm .|. shiftMask, button3), (\w -> focus w >> mouseResizeWindow w
+                                                     >> windows W.shiftMaster))]
 
 ------------------------------------------------------------------------
 -- Layouts:
@@ -248,8 +247,5 @@ defaults = xfceConfig {
 
       -- hooks, layouts
       , startupHook        = myStartupHook
-      -- , layoutHook         = avoidStruts $ layoutHook defaultConfig
-      -- , logHook            = ewmhDesktopsLogHook
-      -- , modMask            = mod4Mask
-      -- , handleEventHook    = ewmhDesktopsEventHook
+      , mouseBindings      = myMouseBindings
     }
