@@ -1,7 +1,7 @@
 import XMonad
 import System.Exit
 import XMonad.Config.Xfce
-import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.SetWMName
 import XMonad.Hooks.ManageDocks
 
 import qualified XMonad.StackSet as W
@@ -49,6 +49,12 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- launch gmrun
     , ((modm .|. shiftMask, xK_p     ), spawn "xfce4-appfinder")
+
+    -- -- make screenshot of whole screen.
+    , ((modm,               xK_Print ), spawn "xfce4-screenshooter -f -s ~/Downloads")
+
+    -- make screenshot of section. TODO: make this work.
+    , ((modm,               xK_Print ), spawn "xfce4-screenshooter -r -s ~/Downloads")
 
     -- close focused window
     , ((modm .|. shiftMask, xK_c     ), kill)
@@ -218,7 +224,8 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 --
 
 myStartupHook = do
-  spawn "$HOME/.xmonad/autostart.sh"
+  setWMName "LG3D"
+  spawn "$HOME/.xmonad/scripts/autostart.sh"
 
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
