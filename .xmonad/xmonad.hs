@@ -53,8 +53,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- -- make screenshot of whole screen.
     , ((modm,               xK_Print ), spawn "xfce4-screenshooter -f -s ~/Downloads")
 
-    -- make screenshot of section. TODO: make this work.
-    , ((modm,               xK_Print ), spawn "xfce4-screenshooter -r -s ~/Downloads")
+    , ((0,                  xK_Print ), spawn "xfce4-screenshooter -r -s ~/Downloads")
 
     -- close focused window
     , ((modm .|. shiftMask, xK_c     ), kill)
