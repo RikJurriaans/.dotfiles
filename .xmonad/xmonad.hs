@@ -3,6 +3,7 @@ import System.Exit
 import XMonad.Config.Xfce
 import XMonad.Hooks.SetWMName
 import XMonad.Hooks.ManageDocks
+import XMonad.Layout
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
@@ -51,9 +52,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_p     ), spawn "xfce4-appfinder")
 
     -- -- make screenshot of whole screen.
-    , ((modm,               xK_Print ), spawn "xfce4-screenshooter -f -s ~/Downloads")
+    , ((modm,               xK_Print ), spawn "xfce4-screenshooter -f -c")
 
-    , ((0,                  xK_Print ), spawn "xfce4-screenshooter -r -s ~/Downloads")
+    , ((0,                  xK_Print ), spawn "xfce4-screenshooter -r -c")
 
     -- close focused window
     , ((modm .|. shiftMask, xK_c     ), kill)
@@ -110,7 +111,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- , ((modm              , xK_b     ), sendMessage ToggleStruts)
 
     -- Quit xmonad
-    , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
+    , ((modm .|. shiftMask, xK_q     ), spawn "xfce4-session-logout")
 
     -- Restart xmonad
     , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
