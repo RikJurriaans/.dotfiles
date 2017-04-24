@@ -41,6 +41,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- launch a terminal
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
+    -- launch firefox
+    , ((modm .|. shiftMask, xK_f     ), spawn "firefox")
+
     , ((modm, xK_b), sendMessage ToggleStruts)
 
     , ((modm .|. shiftMask, xK_q), spawn "xfce4-session-logout")
@@ -54,6 +57,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- -- make screenshot of whole screen.
     , ((modm,               xK_Print ), spawn "xfce4-screenshooter -f -c")
 
+    -- -- make screenshot of whole screen.
     , ((0,                  xK_Print ), spawn "xfce4-screenshooter -r -c")
 
     -- close focused window
