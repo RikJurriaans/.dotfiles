@@ -1,4 +1,5 @@
 set -gx SPARK_HOME /opt/spark-1.6.1
+set -gx NODE_PATH ./lib
 set -gx ANDROID_HOME ~/Android/Sdk
 set -gx ALTERNATE_EDITOR ""
 set -gx EDITOR "emacsclient -t"
